@@ -1,0 +1,46 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference the base resources
+resources:
+- ../../base
+
+# Set production namespace
+namespace: estatekit-documents
+
+# Add common labels for production environment
+commonLabels:
+  environment: production
+  app: estatekit-documents-api
+
+# Configure production-specific patches
+patches:
+- target:
+    kind: Deployment
+    name: estatekit-documents-api
+  patch: |
+    spec:
+      replicas: 4
+      template:
+        spec:
+          containers:
+          - name: estatekit-documents-api
+            resources:
+              requests:
+                cpu: "1"
+                memory: 2Gi
+              limits:
+                cpu: "2"
+                memory: 4Gi
+
+# Generate production-specific ConfigMap
+configMapGenerator:
+- name: estatekit-documents-api-config
+  behavior: merge
+  literals:
+  - ASPNETCORE_ENVIRONMENT=Production
+  - AWS_REGION=us-west-2
+  - ENABLE_DETAILED_LOGGING=true
+  - MAX_DOCUMENT_SIZE_MB=100
+  - REQUESTS_PER_MINUTE=1000
+  - ENABLE_RATE_LIMITING=true
