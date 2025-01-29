@@ -1,0 +1,54 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: estatekit-documents-api-ingress
+  namespace: estatekit-documents
+  annotations:
+    # AWS Load Balancer Controller configuration - v2.6.0
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    
+    # SSL/TLS Configuration
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: ${AWS_CERTIFICATE_ARN}
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-2-Ext-2018-06
+    
+    # Health Check Configuration
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/success-codes: 200-299
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '10'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
+    
+    # Security Configuration
+    alb.ingress.kubernetes.io/waf-acl-id: ${WAF_ACL_ID}
+    alb.ingress.kubernetes.io/shield-advanced-protection: 'true'
+    
+    # Access Logging
+    alb.ingress.kubernetes.io/load-balancer-attributes: access_logs.s3.enabled=true,access_logs.s3.bucket=${ACCESS_LOGS_BUCKET}
+    
+    # Rate Limiting Configuration
+    alb.ingress.kubernetes.io/actions.rate-limit: |
+      {
+        "type": "fixed-response",
+        "fixedResponseConfig": {
+          "contentType": "application/json",
+          "statusCode": "429",
+          "messageBody": "{\"error\":\"rate limit exceeded\"}"
+        }
+      }
+    
+    # Target Group Configuration
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30
+
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: estatekit-documents-api
+                port:
+                  number: 443
