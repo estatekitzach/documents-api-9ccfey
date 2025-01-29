@@ -1,0 +1,88 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- Target Framework -->
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>EstateKit.Documents.Api</RootNamespace>
+    
+    <!-- Documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591</NoWarn>
+    
+    <!-- Code Analysis -->
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    
+    <!-- Project Info -->
+    <Authors>EstateKit</Authors>
+    <Description>REST API endpoints and components for secure document management and analysis in the EstateKit ecosystem</Description>
+    <Copyright>Copyright © EstateKit 2024</Copyright>
+  </PropertyGroup>
+
+  <!-- Code Analysis Rules -->
+  <PropertyGroup>
+    <WarningsAsErrors>CS8600;CS8602;CS8603;CS8604;CS8618;CS8625</WarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Project References -->
+  <ItemGroup>
+    <ProjectReference Include="..\EstateKit.Documents.Core\EstateKit.Documents.Core.csproj" />
+    <ProjectReference Include="..\EstateKit.Documents.Infrastructure\EstateKit.Documents.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <!-- Package References -->
+  <ItemGroup>
+    <!-- Authentication v9.0.0 - JWT bearer token authentication -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    
+    <!-- API Versioning v5.1.0 - API version management -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
+    
+    <!-- OpenAPI Documentation v6.5.0 -->
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.0" />
+    
+    <!-- Logging v8.0.0 - Structured logging -->
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.3.0" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    
+    <!-- Validation v11.3.0 - Request validation -->
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    
+    <!-- Performance v9.0.0 - Response compression -->
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="9.0.0" />
+    
+    <!-- Security v9.0.0 - Security headers and CORS -->
+    <PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" Version="9.0.0" />
+  </ItemGroup>
+
+  <!-- Code Analysis Packages -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Folder Structure -->
+  <ItemGroup>
+    <Compile Include="Controllers\**\*.cs" />
+    <Compile Include="DTOs\**\*.cs" />
+    <Compile Include="Filters\**\*.cs" />
+    <Compile Include="Middleware\**\*.cs" />
+    <Compile Include="Configuration\**\*.cs" />
+  </ItemGroup>
+
+</Project>
