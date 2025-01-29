@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: estatekit-documents-api-config
+  namespace: estatekit
+  labels:
+    app: estatekit-documents-api
+    component: api
+    environment: ${ENVIRONMENT}
+data:
+  appsettings.json: |
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information",
+          "EstateKit.Documents.Security": "Debug",
+          "EstateKit.Documents.Storage": "Debug"
+        },
+        "CloudWatch": {
+          "LogGroup": "/estatekit/documents-api/${ENVIRONMENT}",
+          "RetentionDays": 90,
+          "EnableStructuredLogging": true,
+          "SecurityEventLevel": "Debug"
+        }
+      },
+      "AWS": {
+        "Region": "${AWS_REGION}",
+        "S3BucketName": "${S3_BUCKET_NAME}",
+        "CloudWatchLogGroup": "/estatekit/documents-api/${ENVIRONMENT}",
+        "TextractTimeoutSeconds": 300,
+        "S3PresignedUrlExpirationMinutes": 15,
+        "EnableServerSideEncryption": true,
+        "CrossRegionReplication": {
+          "Enabled": true,
+          "DestinationRegion": "${AWS_SECONDARY_REGION}",
+          "ReplicaBucketName": "${S3_REPLICA_BUCKET_NAME}"
+        },
+        "Backup": {
+          "Enabled": true,
+          "RetentionDays": 90,
+          "Schedule": "cron(0 0 * * ? *)"
+        },
+        "KMS": {
+          "KeyAlias": "alias/estatekit-documents-${ENVIRONMENT}",
+          "EnableAutoRotation": true
+        }
+      },
+      "Storage": {
+        "MaxDocumentSizeBytes": 104857600,
+        "DefaultStoragePath": "/documents",
+        "DocumentTypePaths": {
+          "Password": "/passwords/{encrypted_user_id}/{encrypted_filename}",
+          "Medical": "/medical/{encrypted_user_id}/{encrypted_filename}",
+          "Insurance": "/insurance/{encrypted_user_id}/{encrypted_filename}",
+          "PersonalIdentifiers": "/personal/{encrypted_user_id}/{encrypted_filename}"
+        },
+        "ArchivePaths": {
+          "Password": "/archive/passwords/{year}/{month}/{encrypted_user_id}/{encrypted_filename}",
+          "Medical": "/archive/medical/{year}/{month}/{encrypted_user_id}/{encrypted_filename}",
+          "Insurance": "/archive/insurance/{year}/{month}/{encrypted_user_id}/{encrypted_filename}",
+          "PersonalIdentifiers": "/archive/personal/{year}/{month}/{encrypted_user_id}/{encrypted_filename}"
+        },
+        "AllowedFileExtensions": [
+          ".pdf",
+          ".doc",
+          ".docx",
+          ".jpg",
+          ".png",
+          ".gif",
+          ".txt",
+          ".xlsx"
+        ],
+        "RetentionPolicy": {
+          "DefaultRetentionDays": 2555,
+          "MinimumRetentionDays": 90,
+          "EnableWorm": true
+        },
+        "GlacierTransition": {
+          "Enabled": true,
+          "TransitionDays": 90,
+          "GlacierTier": "DEEP_ARCHIVE"
+        }
+      },
+      "API": {
+        "Version": "v1",
+        "Title": "EstateKit Documents API",
+        "Description": "Document management system for EstateKit",
+        "RateLimit": {
+          "RequestsPerMinute": 1000,
+          "EnableRateLimiting": true,
+          "IpWhitelist": ["${INTERNAL_NETWORK_CIDR}"]
+        }
+      }
+    }
