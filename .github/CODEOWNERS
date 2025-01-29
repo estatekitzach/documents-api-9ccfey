@@ -1,0 +1,28 @@
+# Unless a later match takes precedence, @estatekit/core-team
+# will be requested for review when someone opens a pull request
+* @estatekit/core-team
+
+# Core domain logic ownership
+src/backend/EstateKit.Documents.Core/** @estatekit/domain-experts
+
+# Infrastructure implementation ownership
+src/backend/EstateKit.Documents.Infrastructure/** @estatekit/infrastructure-team
+
+# API implementation ownership
+src/backend/EstateKit.Documents.Api/** @estatekit/api-team
+
+# AWS infrastructure configuration ownership
+infrastructure/aws/** @estatekit/devops-team
+
+# CI/CD workflow ownership
+.github/workflows/** @estatekit/devops-team
+
+# Security implementation ownership - requires security team review
+src/backend/**/Security/** @estatekit/security-team
+src/backend/**/Authentication/** @estatekit/security-team
+
+# Test implementation ownership
+src/backend/tests/** @estatekit/qa-team
+
+# Sensitive paths requiring security team review
+infrastructure/aws/kubernetes/base/secrets.yaml @estatekit/security-team
