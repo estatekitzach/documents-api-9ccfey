@@ -1,0 +1,56 @@
+.git
+.gitignore
+.gitattributes
+
+# Development Environment
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Build Artifacts
+**/bin/
+**/obj/
+**/*.nupkg
+packages/
+
+# Dependencies
+**/node_modules/
+package-lock.json
+
+# Configuration
+**/*.Development.json
+**/*.Staging.json
+**/*.Production.json
+**/*.local.json
+
+# Testing
+**/tests/
+**/*.Tests.csproj
+**/TestResults/
+coverage/
+*.coverage
+
+# Documentation
+**/*.md
+LICENSE
+docs/
+
+# Docker
+docker-compose*.yml
+.dockerignore
+
+# Environment and Secrets
+.env*
+**/*.pfx
+**/*.key
+**/*.pem
+**/secrets/
+
+# Temporary and System Files
+*~
+*.swp
+*.log
+.DS_Store
+Thumbs.db
