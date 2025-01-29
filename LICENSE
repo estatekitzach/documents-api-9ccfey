@@ -1,0 +1,78 @@
+MIT License with Enhanced Security and Compliance Requirements
+
+Copyright (c) 2024 EstateKit Documents API
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+1. Security and Compliance Requirements:
+
+   a. All implementations must maintain SOC 2 Type II compliance for document handling
+      and processing operations, with annual third-party audits.
+   
+   b. GDPR compliance must be maintained for all operations involving EU resident data,
+      including but not limited to:
+      - Implementation of data encryption at rest and in transit
+      - Proper data subject access rights implementation
+      - Data minimization and retention policies
+      - Breach notification procedures
+   
+   c. HIPAA compliance must be maintained for all medical document processing,
+      including:
+      - Encryption of Protected Health Information (PHI)
+      - Access controls and audit logging
+      - Business Associate Agreement requirements
+      - Security incident procedures
+
+2. Data Protection Obligations:
+
+   a. All document storage implementations must use AES-256 encryption or stronger.
+   
+   b. Access control systems must implement role-based access control (RBAC).
+   
+   c. Security monitoring and audit logging must be maintained with a minimum
+      90-day retention period.
+   
+   d. Regular security assessments must be conducted at least quarterly.
+
+3. Distribution Requirements:
+
+   a. Source code distributions must maintain all security controls and compliance
+      features.
+   
+   b. Binary distributions must include all required security features and
+      compliance capabilities.
+   
+   c. Modified versions must maintain compliance with all security and regulatory
+      requirements.
+
+4. Notice Requirements:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Additional Warranty Disclaimer for Document Processing:
+
+THE SOFTWARE PROVIDES DOCUMENT PROCESSING CAPABILITIES WITHOUT ANY WARRANTY
+REGARDING THE ACCURACY OF OPTICAL CHARACTER RECOGNITION (OCR), DOCUMENT
+ANALYSIS, OR DATA EXTRACTION. USERS MUST INDEPENDENTLY VERIFY ALL EXTRACTED
+INFORMATION AND MAINTAIN APPROPRIATE QUALITY CONTROL PROCESSES.
+
+Security Incident Notification:
+
+USERS MUST NOTIFY THE COPYRIGHT HOLDERS WITHIN 72 HOURS OF ANY SECURITY
+INCIDENTS OR BREACHES INVOLVING THE SOFTWARE THAT MAY IMPACT THE
+CONFIDENTIALITY, INTEGRITY, OR AVAILABILITY OF PROTECTED DOCUMENTS OR
+SENSITIVE INFORMATION.
