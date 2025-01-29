@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: estatekit-documents
+  labels:
+    name: estatekit-documents
+    environment: base
+    app: estatekit-documents-api
+    team: platform
+    cost-center: estatekit-platform
+    security-zone: restricted
+  annotations:
+    description: "Namespace for EstateKit Documents API resources"
+    owner: "EstateKit Platform Team"
+    contact: "platform-team@estatekit.com"
+    compliance-level: "financial-services"
+    backup-policy: "daily"
+    security-scan-required: "true"
+    network-policy-enforced: "true"
