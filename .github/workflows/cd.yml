@@ -1,0 +1,132 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/backend/**'
+      - '.github/workflows/cd.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'Deployment Environment'
+        options:
+          - development
+          - staging
+          - production
+        default: 'development'
+        required: true
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  DOCKER_BUILDKIT: '1'
+  NAMESPACE: estatekit-documents
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'development' }}
+    concurrency: deploy-${{ github.event.inputs.environment || 'development' }}
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        id: ecr-login
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src/backend
+          file: ./src/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+            ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
+
+      - name: Deploy to EKS with blue-green strategy
+        id: deploy
+        run: |
+          chmod +x ./infrastructure/aws/scripts/deploy.sh
+          ./infrastructure/aws/scripts/deploy.sh \
+            --image "${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}" \
+            --namespace "${{ env.NAMESPACE }}" \
+            --environment "${{ github.event.inputs.environment || 'development' }}"
+        env:
+          DEPLOY_TIMEOUT: ${{ github.event.inputs.environment == 'production' && '15m' || '10m' }}
+
+      - name: Verify deployment health
+        id: health-check
+        run: |
+          HEALTH_CHECK_ENDPOINT="https://api.${{ github.event.inputs.environment || 'development' }}.estatekit.com/health"
+          MAX_RETRIES=30
+          RETRY_INTERVAL=10
+          
+          for ((i=1; i<=MAX_RETRIES; i++)); do
+            response=$(curl -s -o /dev/null -w "%{http_code}" $HEALTH_CHECK_ENDPOINT)
+            if [ "$response" == "200" ]; then
+              echo "Health check passed"
+              exit 0
+            fi
+            echo "Attempt $i: Health check failed, retrying in ${RETRY_INTERVAL}s..."
+            sleep $RETRY_INTERVAL
+          done
+          
+          echo "Health check failed after $MAX_RETRIES attempts"
+          exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          chmod +x ./infrastructure/aws/scripts/rollback.sh
+          ./infrastructure/aws/scripts/rollback.sh \
+            --namespace "${{ env.NAMESPACE }}" \
+            --environment "${{ github.event.inputs.environment || 'development' }}"
+
+      - name: Upload deployment logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-logs
+          path: deployment-logs/*.log
+          retention-days: 7
+
+      - name: Upload Kubernetes manifests
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: kubernetes-manifests
+          path: kubernetes/*.yaml
+          retention-days: 7
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
