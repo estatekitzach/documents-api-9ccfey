@@ -1,0 +1,43 @@
+# Use official .NET SDK image for development
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
+# Set working directory
+WORKDIR /app
+
+# Configure environment variables for development
+ENV ASPNETCORE_ENVIRONMENT=Development \
+    DOTNET_USE_POLLING_FILE_WATCHER=true \
+    ASPNETCORE_URLS="http://+:80;https://+:443" \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certs/devcert.pfx \
+    ASPNETCORE_Kestrel__Certificates__Default__Password=devpassword \
+    DOTNET_WATCH_RESTART_ON_RUDE_EDIT=true
+
+# Copy solution and project files first to optimize layer caching
+COPY src/EstateKit.Documents.Api/*.csproj ./src/EstateKit.Documents.Api/
+COPY *.sln .
+
+# Restore NuGet packages
+RUN dotnet restore "src/EstateKit.Documents.Api/EstateKit.Documents.Api.csproj"
+
+# Copy the rest of the source code
+COPY . .
+
+# Build the application in Debug configuration
+RUN dotnet build "src/EstateKit.Documents.Api/EstateKit.Documents.Api.csproj" -c Debug -o /app/build
+
+# Expose ports for HTTP, HTTPS and debugging
+EXPOSE 80
+EXPOSE 443
+EXPOSE 9229
+
+# Configure volume mounts for development
+VOLUME ["/app/src", "/root/.microsoft/usersecrets", "/root/.nuget/packages", "/app/certs"]
+
+# Set up healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:80/health || exit 1
+
+# Configure development entrypoint with hot reload
+ENTRYPOINT ["dotnet", "watch", "run", "--project", "src/EstateKit.Documents.Api/EstateKit.Documents.Api.csproj", "--launch-profile", "Development"]
