@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: estatekit-documents-api
+  namespace: estatekit-documents
+  labels:
+    app: estatekit-documents-api
+    component: api
+    environment: production
+    tier: backend
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: ${AWS_ACM_CERT_ARN}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+spec:
+  type: NodePort
+  ports:
+    - port: 443
+      targetPort: 80
+      protocol: TCP
+      name: https
+  selector:
+    app: estatekit-documents-api
+    component: api
+  sessionAffinity: None
+  externalTrafficPolicy: Local
