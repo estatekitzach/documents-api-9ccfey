@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Target Framework -->
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>EstateKit.Documents.Api.Tests</RootNamespace>
+    
+    <!-- Code Analysis -->
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    
+    <!-- Project Info -->
+    <Authors>EstateKit</Authors>
+    <Description>Comprehensive test suite for the EstateKit Documents API including endpoint, security, performance and compliance validation</Description>
+    <Copyright>Copyright © EstateKit 2024</Copyright>
+  </PropertyGroup>
+
+  <!-- Code Analysis Rules -->
+  <PropertyGroup>
+    <WarningsAsErrors>CS8600;CS8602;CS8603;CS8604;CS8618;CS8625</WarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Project References -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\EstateKit.Documents.Api\EstateKit.Documents.Api.csproj" />
+    <ProjectReference Include="..\..\..\src\EstateKit.Documents.Core\EstateKit.Documents.Core.csproj" />
+  </ItemGroup>
+
+  <!-- Test Framework Packages -->
+  <ItemGroup>
+    <!-- Core Testing Infrastructure v17.8.0 -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    
+    <!-- xUnit Test Framework v2.6.0 -->
+    <PackageReference Include="xunit" Version="2.6.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    
+    <!-- Mocking Framework v4.20.0 -->
+    <PackageReference Include="Moq" Version="4.20.0" />
+    
+    <!-- Assertion Framework v6.12.0 -->
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    
+    <!-- ASP.NET Core Testing v9.0.0 -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
+    
+    <!-- Code Coverage v6.0.0 -->
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Code Analysis Packages -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Test File Organization -->
+  <ItemGroup>
+    <Compile Include="Controllers\**\*.cs" />
+    <Compile Include="Security\**\*.cs" />
+    <Compile Include="Performance\**\*.cs" />
+    <Compile Include="Integration\**\*.cs" />
+    <Compile Include="Helpers\**\*.cs" />
+  </ItemGroup>
+
+  <!-- Test Data -->
+  <ItemGroup>
+    <None Update="TestData\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
