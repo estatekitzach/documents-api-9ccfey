@@ -1,0 +1,109 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Base resources to customize
+resources:
+- ../../base
+
+# Target namespace for staging environment
+namespace: estatekit-documents-staging
+
+# Common labels for all resources
+commonLabels:
+  environment: staging
+  app: estatekit-documents-api
+  tier: backend
+  managed-by: kustomize
+
+# Deployment patches for staging-specific configuration
+patches:
+- target:
+    kind: Deployment
+    name: estatekit-documents-api
+  patch:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: estatekit-documents-api
+            resources:
+              requests:
+                cpu: 1000m
+                memory: 2Gi
+              limits:
+                cpu: "2"
+                memory: 4Gi
+            readinessProbe:
+              httpGet:
+                path: /health
+                port: 80
+              initialDelaySeconds: 15
+              periodSeconds: 10
+            livenessProbe:
+              httpGet:
+                path: /health
+                port: 80
+              initialDelaySeconds: 30
+              periodSeconds: 20
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                      - estatekit-documents-api
+                  topologyKey: topology.kubernetes.io/zone
+
+# ConfigMap generation for staging environment
+configMapGenerator:
+- name: estatekit-documents-api-config
+  behavior: merge
+  literals:
+  - ENVIRONMENT=staging
+  - AWS_REGION=us-west-2
+  - S3_BUCKET_NAME=estatekit-documents-staging
+  - LOG_LEVEL=Information
+  - REDIS_CACHE_ENABLED=true
+  - TEXTRACT_ASYNC_MODE=true
+  - MAX_DOCUMENT_SIZE_MB=100
+  - DOCUMENT_RETENTION_DAYS=90
+
+# Replica count for staging environment
+replicas:
+- name: estatekit-documents-api
+  count: 3
+
+# Additional resource configurations
+patchesStrategicMerge:
+# Resource quota for staging namespace
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: estatekit-documents-staging-quota
+  spec:
+    hard:
+      cpu: "8"
+      memory: 16Gi
+      pods: "10"
+
+# Network policy for staging environment
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: estatekit-documents-staging-network-policy
+  spec:
+    podSelector:
+      matchLabels:
+        app: estatekit-documents-api
+    policyTypes:
+    - Ingress
+    - Egress
+    ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            environment: staging
