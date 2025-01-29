@@ -1,0 +1,70 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference the base resources
+resources:
+- ../../base
+
+# Set development namespace
+namespace: estatekit-documents-dev
+
+# Add common labels for development environment
+commonLabels:
+  environment: development
+  app: estatekit-documents-api
+  tier: development
+
+# Patch the deployment for development-specific configurations
+patches:
+- target:
+    kind: Deployment
+    name: estatekit-documents-api
+  patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: estatekit-documents-api
+    spec:
+      replicas: 1
+      template:
+        spec:
+          containers:
+          - name: estatekit-documents-api
+            resources:
+              requests:
+                cpu: "250m"
+                memory: "512Mi"
+              limits:
+                cpu: "500m"
+                memory: "1Gi"
+            env:
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: estatekit-documents-api-config
+                  key: ASPNETCORE_ENVIRONMENT
+
+# Generate development-specific ConfigMap
+configMapGenerator:
+- name: estatekit-documents-api-config
+  behavior: merge
+  literals:
+  - ASPNETCORE_ENVIRONMENT=Development
+  - AWS_REGION=us-west-2
+  - S3_BUCKET_NAME=estatekit-documents-dev
+  - CLOUDWATCH_LOG_GROUP=/estatekit/documents-api/dev
+  - DEBUG_MODE=true
+  - LOG_LEVEL=Debug
+
+# Development-specific resource quotas
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: estatekit-documents-dev-quota
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 2Gi
+    limits.cpu: "2"
+    limits.memory: 4Gi
+    pods: "10"
