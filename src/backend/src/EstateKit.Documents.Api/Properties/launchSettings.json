@@ -1,0 +1,60 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:5000",
+      "sslPort": 5001
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation",
+        "AWS_PROFILE": "estatekit-dev",
+        "AWS_REGION": "us-east-1",
+        "ASPNETCORE_DETAILED_ERRORS": "true",
+        "ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS": "false"
+      }
+    },
+    "EstateKit.Documents.Api": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation",
+        "AWS_PROFILE": "estatekit-dev",
+        "AWS_REGION": "us-east-1",
+        "ASPNETCORE_DETAILED_ERRORS": "true",
+        "ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS": "false",
+        "COMPlus_ThreadPool_ForceMinWorkerThreads": "100",
+        "COMPlus_ThreadPool_ForceMaxWorkerThreads": "500"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": false,
+      "publishAllPorts": true,
+      "useSSL": true,
+      "sslPort": 5001,
+      "httpPort": 5000,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://+:443;http://+:80",
+        "ASPNETCORE_HTTPS_PORT": "5001",
+        "ASPNETCORE_Kestrel__Certificates__Default__Path": "/root/.aspnet/https/aspnetapp.pfx",
+        "ASPNETCORE_Kestrel__Certificates__Default__Password": "SecurePassword123!",
+        "AWS_PROFILE": "estatekit-dev",
+        "AWS_REGION": "us-east-1",
+        "ASPNETCORE_DETAILED_ERRORS": "true",
+        "ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS": "false",
+        "COMPlus_ThreadPool_ForceMinWorkerThreads": "100",
+        "COMPlus_ThreadPool_ForceMaxWorkerThreads": "500"
+      }
+    }
+  }
+}
